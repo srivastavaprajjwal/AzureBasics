@@ -67,8 +67,6 @@ namespace AzureWeek1Assignment3
 
                 Console.WriteLine("Creating a Windows VM");
 
-                var t1 = new DateTime();
-
                 var vm = azure.VirtualMachines.Define(vmName)
                         .WithRegion(region)
                         .WithNewResourceGroup(rgName)
@@ -83,12 +81,12 @@ namespace AzureWeek1Assignment3
                         .WithSize(VirtualMachineSizeTypes.Parse("Standard_D2s_v3"))
                         .Create();
 
-                var t2 = new DateTime();
-                Console.WriteLine($"Created VM: (took {(t2 - t1).TotalSeconds} seconds) " + vm.Id);
-                // Print virtual machine details
-                Console.WriteLine(vm);
 
-                
+                // Print virtual machine details
+                Console.WriteLine("Virtual Machine Created! with resource ID: " + vm.Id);
+                Console.WriteLine("\n===========================\n\n");
+
+
                 // Update - Tag the virtual machine
                 vm.Update()
                         .WithTag("created via", "fluent")
@@ -98,21 +96,25 @@ namespace AzureWeek1Assignment3
 
                 //=============================================================
                 // Update - Add data disk
+                Console.WriteLine("Adding Data Disk to the VM");
+                
                 vm.Update()
                         .WithNewDataDisk(10)
                         .Apply();
 
-                Console.WriteLine("Added a data disk to VM" + vm.Id);
-                Console.WriteLine(vm);
+                Console.WriteLine("Added a data disk to VM" + vm.Name);
+                Console.WriteLine("\n===========================\n\n");
 
                 //=============================================================
                 // Update - detach data disk
+                Console.WriteLine("Detaching Data Disk from the VM");
 
                 vm.Update()
                         .WithoutDataDisk(0)
                         .Apply();
 
-                Console.WriteLine("Detached data disk from VM " + vm.Id);
+                Console.WriteLine("Detached data disk from VM " + vm.Name);
+                Console.WriteLine("\n===========================\n\n");
 
                 //=============================================================
                 // Create/Update - NSG 
@@ -175,8 +177,9 @@ namespace AzureWeek1Assignment3
                             .Attach()
                         .Create();
 
-                Console.WriteLine("Created a virtual network: " + network.Id);
-                Console.WriteLine(network);
+                Console.WriteLine("Created Virtual Network! Resource id: " + network.Id);
+                Console.WriteLine("\n===========================\n\n");
+
 
                 //============================================================
                 // Create a network security group for the subnet
@@ -207,10 +210,10 @@ namespace AzureWeek1Assignment3
                             .Attach()
                         .Create();
 
-                Console.WriteLine("Created a security group: " + nsg.Id);
-                Console.WriteLine(nsg);
-              
-                
+                Console.WriteLine("Created a Network Security Group! Resource id:" + nsg.Id);
+                Console.WriteLine("\n===========================\n\n");
+
+
                 //========================================================
                 // Update a network security group
 
@@ -229,31 +232,15 @@ namespace AzureWeek1Assignment3
                             .Attach()
                         .Apply();
 
-                Console.WriteLine("Updated the network security group");
-                Console.WriteLine(nsg);
+                Console.WriteLine("Updated the network security group:"+ nsg.Name);
+                Console.WriteLine("\n===========================\n\n");
             }
             catch (Exception e)
             {
                 Console.WriteLine("NSG Creation/Update Failed. Find stack trace below:");
                 Console.WriteLine(e);
             }
-            finally
-            {
-                try
-                {
-                    Console.WriteLine("Deleting Resource Group: " + rgName);
-                    azure.ResourceGroups.DeleteByName(rgName);
-                    Console.WriteLine("Deleted Resource Group: " + rgName);
-                }
-                catch (NullReferenceException)
-                {
-                    Console.WriteLine("Did not create any resources in Azure. No clean up is necessary");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                }
-            }
         }
+
     }
 }
